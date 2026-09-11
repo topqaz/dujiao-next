@@ -516,6 +516,11 @@ func sendMailWithStartTLS(addr, host, from string, to []string, msg []byte, user
 	}
 	defer closeSMTPClientOnError(client, &err, host, addr)
 
+	// Send an explicit client identity before STARTTLS for Gmail SMTP Relay compatibility.
+	if err := client.Hello("dujiao-next"); err != nil {
+		return err
+	}
+
 	if err := client.StartTLS(&tls.Config{ServerName: host}); err != nil {
 		return err
 	}
